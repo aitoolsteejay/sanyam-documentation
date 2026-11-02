@@ -1,0 +1,81 @@
+# DIRECTORIES AND FORUMS
+
+DIRECTORIES
+
+1. [https://www.futuregenapps.com/directory-submission-sites-list](https://www.futuregenapps.com/directory-submission-sites-list)
+2. [https://amazeinstitute.co.in/directory-submission-sites/](https://amazeinstitute.co.in/directory-submission-sites/)
+
+FORUMS
+
+1. r/startups
+2. r/Entrepreneur
+3. r/smallbusiness
+4. r/ecommerce
+5. r/saas
+6. r/growmybusiness
+7. r/SideProject
+8. r/indiehackers
+9. r/marketing
+10. r/SEO
+11. r/bigseo
+12. r/PPC
+13. r/growthhacking
+14. r/content_marketing
+15. r/analytics
+16. r/mumbai
+17. r/bangalore
+18. r/pune
+19. r/delhi
+20. r/IndiaTech
+21. r/developersIndia
+22. r/AskIndia
+23. r/IndiaInvestments
+24. r/shopify
+25. r/B2B
+26. r/copywriting
+27. r/digital_marketing
+28. r/userexperience
+29. r/hyderabad
+30. r/india
+31. r/dataisbeautiful
+32. r/coolguides
+33. r/InternetIsBeautiful
+34. r/IMadeThis
+35. r/Business_Ideas
+36. r/webdev
+37. r/design_critiques
+38. r/linkedinlunatics
+39. r/personalfinanceindia
+40. r/IndiaSpeaks
+41. r/socialmedia
+42. r/Emailmarketing
+43. r/freelance
+44. r/Wordpress
+45. r/Business
+46. r/investing
+47. r/AskMarketing
+48. r/branding
+49. r/web_design
+50. r/HubSpot
+51. r/salesforce
+52. r/fintech
+53. r/HealthIT
+54. r/edtech
+55. r/realestateinvesting
+56. r/d2c
+57. r/SaaSgrowth
+58. r/kolkata
+59. r/chennai
+60. r/ahmedabad
+61. r/gurgaon
+62. r/noida
+63. r/fatFIRE
+64. r/graphic_design
+65. r/podcasting
+66. r/publicrelations
+67. r/webmarketing
+68. r/Affiliatemarketing
+69. r/ProductManagement
+70. r/UXDesign
+
+###

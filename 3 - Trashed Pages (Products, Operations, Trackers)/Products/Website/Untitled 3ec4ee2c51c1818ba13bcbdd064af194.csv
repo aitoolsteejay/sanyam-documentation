@@ -1,0 +1,3 @@
+﻿Task,Frequency,When / how
+Add new website pages,Weekly,"Run the triggered checklist in docs/http://seo-aeo-geo-cadence.md on every page add/change: keyword-collision check against docs/http://keyword-map.md (one primary keyword per page), full schema pass (lib/schema.ts), sitemap entry, title/description length, two-way internal links, snippet-style FAQ answers, llms.txt update, no invented stats. Then npx tsc --noEmit + npm run build and push to master."
+"Upkeep of website, dashboards, lead magnets and client tools",Ongoing,"Website changes and debugging; dashboard changes; to add a new AI tool, follow the 8-step checklist in the Website docs (section 5)."

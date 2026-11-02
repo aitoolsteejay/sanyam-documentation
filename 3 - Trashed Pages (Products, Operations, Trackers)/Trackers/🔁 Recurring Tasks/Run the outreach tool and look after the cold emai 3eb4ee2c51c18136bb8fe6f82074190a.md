@@ -1,0 +1,8 @@
+# Run the outreach tool and look after the cold email domains
+
+Area: Outreach
+Frequency: Ongoing
+Loom recorded: No
+System: Outreach Tool
+Tools: http://outreach.myntmore.com, Waalaxy, GoDaddy
+When / how: Per the outreach-tool README: work the admin queue (Submitted, In review, In setup, Live, Completed). For each campaign download the client's lead CSV, create the campaign and paste the messages in Waalaxy by hand (or link + push leads via the API), log into the client's LinkedIn in a real browser and relay 2FA through the dashboard. Update results by typing numbers or uploading the Waalaxy contact export. Resolve alerts, including the automatic alert when a client edits their brief.

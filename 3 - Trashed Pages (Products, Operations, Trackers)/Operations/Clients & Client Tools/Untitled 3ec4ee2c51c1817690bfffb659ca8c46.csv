@@ -1,0 +1,11 @@
+﻿Project,What it is,Status,Live URL
+Skc resource,Client resource for SKC World,Live - in use,
+Campaign Tracker,"Clients see requests sent, sentiment and replies",Live - in use,https://campaign-access-tracker.vercel.app
+Nizar cheat sheet,Lead magnet for Nizar's outreach,Live - in use,
+candidate-mind-reader,Client tool for Amey (InsightLLM),Live - in use,https://candidate-mind-reader.vercel.app
+target-genome,Client tool for Vinu,Live - in use,https://target-genome.vercel.app
+Hozefa outreach Make automation,Found companies for Hozefa's outreach,Live - not in use,
+Nizar resource (vacant seat cost),"Calculates the cost of a vacant seat, for Nizar's outreach",In progress,
+Vinu resource,Shows where a hiring funnel is leaking,In progress,
+kms-pharma-roi,"'The Four-Month Model': lead-magnet ROI calculator for KMS Pharma (Dr Ganesan) showing what an in-house BA/BE study + dossier development is worth vs an outside CRO. One static index.html (about 1,450 lines): 3-step wizard (inputs, email gate, results), V1/V2/V3 value model with margin erosion and NPV, 13 markets, 12 currencies, jsPDF report, Microsoft Bookings CTA. Part of the website revamp + SEO/AEO/GEO proposal (₹2.1L one-time + ₹20k/month).",In progress,https://kms-pharma-roi.vercel.app
+Client Dashboard SaaS,Clients see campaign status and minutes of meetings,Stuck,

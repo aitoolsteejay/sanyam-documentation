@@ -1,0 +1,5 @@
+﻿Task,Frequency,When / how
+Build ManyChat resources for Instagram Reels,Ongoing,Each Reel that offers a resource needs a ManyChat keyword flow that DMs the resource link.
+Check the Claude automation that adds Enwill to TJ's Calendly calls,Ongoing,"Automated by a scheduled Claude task on TJ's Claude account. Just check it's still running: if Enwill is missing from a booked call, check the task in TJ's Claude."
+Review and optimise Zoho CRM automations,Ongoing,
+Cold-calling process (inbound + outbound),Ongoing,Follow the Zoho CRM cold-calling SOP. Track connect rate and qualification rate.

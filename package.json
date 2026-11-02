@@ -1,0 +1,20 @@
+{
+  "name": "myntmore-sanyam-documentation",
+  "version": "1.0.0",
+  "description": "Myntmore Technical Operations & Handover Web Portal",
+  "private": true,
+  "homepage": "https://github.com/aitoolsteejay/sanyam-documentation",
+  "scripts": {
+    "start": "python3 portal/serve.py",
+    "build:data": "python3 portal/build_data.py"
+  },
+  "keywords": [
+    "myntmore",
+    "operations",
+    "handover",
+    "documentation",
+    "zoho-workdrive"
+  ],
+  "author": "Sanyam (Myntmore)",
+  "license": "UNLICENSED"
+}

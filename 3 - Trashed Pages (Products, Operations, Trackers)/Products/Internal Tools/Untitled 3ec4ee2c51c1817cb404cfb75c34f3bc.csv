@@ -1,0 +1,5 @@
+﻿Project,What it is,Status,Live URL,GitHub repo
+TIE Workshop,"Helped workshop attendees with profile, ICP, value prop, GTM and website",Live - not in use,,
+Transcriber tool,Transcribes YouTube Shorts and Instagram Reels for content,Live - not in use,,
+Campaign Strategizer,Campaign Strategizer: writes LinkedIn connection notes and follow-ups. Has 8 client presets in clientPresets.ts.,Live - not in use,https://campaign-strategy.vercel.app,aitoolsteejay/campaign-strategy
+Work Update Tracker,"Internal tool for daily work logs, updates and AI (Gemini) reports. Built by Sanyam with Claude Code. INCOMPLETE: paused before finishing.",Live - not in use,https://workupdatetracker-kappa.vercel.app,aitoolsteejay/workupdatetracker

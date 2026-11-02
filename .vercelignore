@@ -1,0 +1,12 @@
+# Vercel Deployment Ignore
+# Ignores large raw Notion markdown files & CSVs during Vercel deployment
+# All data is pre-compiled into portal/data.js (435KB) for instant loading.
+
+1 - Handover Hub
+2 - AI Agents Workspace
+3 - Trashed Pages (Products, Operations, Trackers)
+FILE_INDEX.txt
+.git
+.DS_Store
+*.pyc
+__pycache__

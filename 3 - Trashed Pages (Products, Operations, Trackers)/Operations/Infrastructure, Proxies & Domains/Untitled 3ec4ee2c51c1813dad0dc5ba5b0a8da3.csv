@@ -1,0 +1,6 @@
+﻿Task,Frequency,When / how
+Existing tools: monthly changes,Monthly + on demand,Keys are not rotated. There is one fixed Gemini API key on the mailto:aitoolsteejay@gmail.com account.
+"Dashboard, Vercel, GitHub and domain connection check",Monthly,
+Supabase storage limit check,Monthly,
+"Renew proxies (TJ, team, clients)",Monthly + on demand,"MarsProxies (all the Mumbai proxies) renews on the 29th; log in with Google as mailto:aitoolsteejay@gmail.com. Top up Dataimpulse (growth@) when it runs low. Decodo covers Hyderabad. Luna, Roundproxies and Geonix are no longer used. Occasionally set up browsers for the team."
+Repo leak check,Monthly,

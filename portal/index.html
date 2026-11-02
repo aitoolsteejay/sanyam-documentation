@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MYNTMORE | Technical Operations & Handover Portal</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81',
+            },
+            workdrive: {
+              50: '#f0fdf4',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              bg: '#052e16'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'Fira Code', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Top Sticky Header -->
+  <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800/80 px-4 lg:px-8 py-2.5 transition-colors">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      
+      <!-- Brand & Hub Identity + Breadcrumb -->
+      <div class="flex items-center gap-3 min-w-0">
+        <button id="mobile-menu-toggle" class="lg:hidden p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 focus:outline-none" aria-label="Toggle menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <div class="flex items-center gap-2.5 cursor-pointer flex-shrink-0" onclick="switchTab('overview')">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-cyan-400 flex items-center justify-center font-black text-white text-base shadow-lg shadow-indigo-500/20">
+            M
+          </div>
+          <span class="font-extrabold tracking-tight text-white text-base hidden sm:inline">MYNTMORE</span>
+        </div>
+
+        <!-- Breadcrumb Tracker -->
+        <div class="hidden md:flex items-center gap-2 text-xs text-slate-400 pl-2 border-l border-slate-800 truncate">
+          <span>Operations</span>
+          <span>/</span>
+          <span id="breadcrumb-current-tab" class="text-indigo-400 font-semibold truncate">Overview & Readiness</span>
+        </div>
+      </div>
+
+      <!-- Center: Global Search Bar -->
+      <div class="flex-1 max-w-md mx-2">
+        <button onclick="openSearchModal()" class="w-full flex items-center justify-between bg-slate-800/80 hover:bg-slate-800 border border-slate-700/70 hover:border-indigo-500/50 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-400 shadow-inner group transition-all">
+          <div class="flex items-center gap-2.5 truncate">
+            <svg class="w-4 h-4 text-slate-400 group-hover:text-indigo-400 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <span class="truncate">Search WorkDrive videos, apps, keys, domains, SOPs...</span>
+          </div>
+          <kbd class="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-400">⌘K</kbd>
+        </button>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <!-- Direct Jump to WorkDrive Videos with Fast-Access Menu -->
+        <div class="relative group">
+          <button onclick="switchTab('looms')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-semibold transition-all shadow-sm">
+            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span class="hidden sm:inline">WorkDrive Videos</span>
+            <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/30 text-emerald-300 text-[10px] font-mono font-bold">12</span>
+            <svg class="w-3 h-3 text-emerald-400/80 group-hover:rotate-180 transition-transform hidden sm:inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1.5 w-80 max-h-[82vh] overflow-y-auto rounded-2xl bg-slate-900 border border-emerald-500/30 shadow-2xl p-2.5 hidden group-hover:block transition-all z-50 divide-y divide-slate-800/80">
+            <div class="pb-2 px-1 flex items-center justify-between">
+              <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+                <span>🎬</span> Zoho WorkDrive Library (12)
+              </span>
+              <button onclick="copyAllWorkdriveLinks()" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-semibold transition-colors">Copy All 12</button>
+            </div>
+            <div class="py-1.5 space-y-1 text-xs" id="header-workdrive-quicklist">
+              <!-- Dynamically populated via app.js -->
+            </div>
+            <div class="pt-2 px-1">
+              <button onclick="switchTab('looms')" class="w-full py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs text-center transition-colors shadow-md shadow-emerald-500/20">
+                Open Video Hub & Walkthroughs →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direct Jump to Keys Vault -->
+        <button onclick="switchTab('vault')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-semibold transition-all shadow-sm">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+          <span class="hidden md:inline">Vault</span>
+          <span id="header-vault-badge" class="px-1.5 py-0.2 rounded-full bg-indigo-500/30 text-indigo-300 text-[10px] font-mono font-bold">0/14</span>
+        </button>
+
+        <!-- Checklist Quick Progress Pill -->
+        <button onclick="switchTab('checklist')" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-semibold transition-all">
+          <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span id="header-checklist-progress" class="font-bold font-mono">0/53</span>
+        </button>
+
+        <!-- Live Properties Quick Dropdown -->
+        <div class="relative group">
+          <button class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 transition-colors" title="External Properties">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-2 w-56 rounded-xl bg-slate-900 border border-slate-700 shadow-2xl p-2 hidden group-hover:block transition-all z-50">
+            <div class="text-[10px] font-bold text-slate-400 px-2.5 py-1 uppercase tracking-wider">Live Production Sites</div>
+            <a href="https://www.myntmore.com" target="_blank" class="flex items-center justify-between px-2.5 py-1.5 text-xs text-slate-200 hover:bg-slate-800 rounded-lg">
+              <span>Main Website</span>
+              <span class="text-slate-500 text-[10px] font-mono">myntmore.com</span>
+            </a>
+            <a href="https://dashboard.myntmore.com" target="_blank" class="flex items-center justify-between px-2.5 py-1.5 text-xs text-slate-200 hover:bg-slate-800 rounded-lg">
+              <span>Command Center</span>
+              <span class="text-slate-500 text-[10px] font-mono">dashboard.*</span>
+            </a>
+            <a href="https://outreach.myntmore.com" target="_blank" class="flex items-center justify-between px-2.5 py-1.5 text-xs text-slate-200 hover:bg-slate-800 rounded-lg">
+              <span>Outreach Tool</span>
+              <span class="text-slate-500 text-[10px] font-mono">outreach.*</span>
+            </a>
+            <a href="https://workshop-vert-omega.vercel.app" target="_blank" class="flex items-center justify-between px-2.5 py-1.5 text-xs text-slate-200 hover:bg-slate-800 rounded-lg">
+              <span>AI Workshop</span>
+              <span class="text-slate-500 text-[10px] font-mono">workshop.*</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Top Quick-Navigation Ribbon (Always Visible For Effortless Navigation) -->
+  <nav class="sticky top-[53px] z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-4 lg:px-8 py-2 overflow-x-auto scrollbar-none">
+    <div class="max-w-7xl mx-auto flex items-center gap-1.5 text-xs whitespace-nowrap min-w-max">
+      <button onclick="switchTab('overview')" data-top-tab="overview" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5">
+        <span>🧭</span>
+        <span>Overview</span>
+      </button>
+      <button onclick="switchTab('looms')" data-top-tab="looms" class="top-nav-btn px-3 py-1.5 rounded-lg font-semibold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all flex items-center gap-1.5 shadow-sm">
+        <span>🎬</span>
+        <span>WorkDrive Videos</span>
+        <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/30 text-[10px] font-mono">12</span>
+      </button>
+      <button onclick="switchTab('vault')" data-top-tab="vault" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5">
+        <span>🔑</span>
+        <span>Keys Vault</span>
+      </button>
+      <button onclick="switchTab('apps')" data-top-tab="apps" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5">
+        <span>💻</span>
+        <span>Apps & Repos (25)</span>
+      </button>
+      <button onclick="switchTab('domains')" data-top-tab="domains" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5">
+        <span>🌐</span>
+        <span>Domains (21)</span>
+      </button>
+      <button onclick="switchTab('tasks')" data-top-tab="tasks" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5">
+        <span>🔁</span>
+        <span>Operating SOPs (31)</span>
+      </button>
+      <button onclick="switchTab('checklist')" data-top-tab="checklist" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5">
+        <span>✅</span>
+        <span>Handover Checklist</span>
+      </button>
+      <button onclick="switchTab('leadmagnets')" data-top-tab="leadmagnets" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5">
+        <span>🤖</span>
+        <span>AI Lead Magnets</span>
+      </button>
+      <button onclick="switchTab('clients')" data-top-tab="clients" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5">
+        <span>👥</span>
+        <span>Client Deliverables</span>
+      </button>
+      <button onclick="switchTab('docs')" data-top-tab="docs" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5">
+        <span>📚</span>
+        <span>System Bibles (11)</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Layout: Categorized Sidebar + Content View -->
+  <div class="flex-1 max-w-7xl w-full mx-auto flex flex-col lg:flex-row px-4 lg:px-8 py-6 gap-6">
+
+    <!-- Categorized Left Navigation Sidebar -->
+    <aside id="sidebar-nav" class="lg:w-64 flex-shrink-0 hidden lg:flex flex-col gap-5 bg-slate-900/90 lg:bg-transparent p-4 lg:p-0 rounded-2xl border border-slate-800 lg:border-0 z-20">
+      
+      <!-- Section 1: Core Operations -->
+      <div>
+        <div class="px-2.5 pb-1.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+          <span>Core Operations</span>
+        </div>
+        <nav class="space-y-1">
+          <button onclick="switchTab('overview')" data-tab="overview" class="nav-item active">
+            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <span>Overview & Readiness</span>
+          </button>
+
+          <button onclick="switchTab('looms')" data-tab="looms" class="nav-item group relative">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span class="text-emerald-300 font-bold">WorkDrive Videos</span>
+            <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold">12 LIVE</span>
+          </button>
+
+          <button onclick="switchTab('vault')" data-tab="vault" class="nav-item group relative">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+            <span>Keys & Password Vault</span>
+            <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono font-bold" id="nav-missing-keys-pill">0</span>
+          </button>
+
+          <button onclick="switchTab('checklist')" data-tab="checklist" class="nav-item">
+            <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+            <span>Handover Checklist</span>
+            <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono font-bold" id="nav-checklist-percent">0%</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Section 2: Infrastructure & Code -->
+      <div>
+        <div class="px-2.5 pb-1.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+          <span>Infrastructure & Repos</span>
+        </div>
+        <nav class="space-y-1">
+          <button onclick="switchTab('apps')" data-tab="apps" class="nav-item">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+            <span>Apps & Repos Tracker</span>
+            <span class="ml-auto text-[11px] text-slate-400 font-mono">25</span>
+          </button>
+
+          <button onclick="switchTab('domains')" data-tab="domains" class="nav-item">
+            <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+            <span>Domains & Inboxes</span>
+            <span class="ml-auto text-[11px] text-slate-400 font-mono">21</span>
+          </button>
+
+          <button onclick="switchTab('tasks')" data-tab="tasks" class="nav-item">
+            <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Recurring Rhythm & SOPs</span>
+            <span class="ml-auto text-[11px] text-slate-400 font-mono">31</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Section 3: Products, Growth & Clients -->
+      <div>
+        <div class="px-2.5 pb-1.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+          <span>Products & Growth</span>
+        </div>
+        <nav class="space-y-1">
+          <button onclick="switchTab('leadmagnets')" data-tab="leadmagnets" class="nav-item">
+            <svg class="w-4 h-4 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <span>AI Lead Magnets</span>
+            <span class="ml-auto text-[11px] text-slate-400 font-mono">10</span>
+          </button>
+
+          <button onclick="switchTab('clients')" data-tab="clients" class="nav-item">
+            <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            <span>Client Deliverables</span>
+            <span class="ml-auto text-[11px] text-slate-400 font-mono">8</span>
+          </button>
+
+          <button onclick="switchTab('growth')" data-tab="growth" class="nav-item">
+            <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+            <span>SEO & Growth Engine</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Section 4: System Bibles & Docs -->
+      <div>
+        <div class="px-2.5 pb-1.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+          <span>Knowledge Base</span>
+        </div>
+        <nav class="space-y-1">
+          <button onclick="switchTab('docs')" data-tab="docs" class="nav-item">
+            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <span>System Bibles & Docs</span>
+            <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold">11</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Private Sandbox Security Pill -->
+      <div class="mt-auto pt-2">
+        <div class="rounded-xl bg-slate-900/90 border border-slate-800 p-3 text-xs space-y-1">
+          <div class="flex items-center gap-1.5 text-emerald-400 font-semibold text-[11px]">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            <span>Private Local Storage</span>
+          </div>
+          <p class="text-slate-400 text-[10px] leading-relaxed">
+            All passwords & API keys stay in this browser. Nothing leaves your device.
+          </p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Container (Dynamic Tabs) -->
+    <main class="flex-1 min-w-0" id="main-content">
+      <!-- Injected dynamically via app.js -->
+    </main>
+
+  </div>
+
+  <!-- Global Search Modal (Cmd+K) -->
+  <div id="search-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-start justify-center pt-16 px-4">
+    <div class="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[82vh] animate-in fade-in zoom-in-95 duration-150">
+      <div class="flex items-center gap-3 px-4 py-3.5 border-b border-slate-800">
+        <svg class="w-5 h-5 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <input id="modal-search-input" type="text" placeholder="Search WorkDrive videos, apps, keys, domains, SOPs..." class="w-full bg-transparent text-white placeholder-slate-500 focus:outline-none text-base font-medium" />
+        <button onclick="closeSearchModal()" class="text-xs px-2 py-1 bg-slate-800 text-slate-400 hover:text-white rounded border border-slate-700">ESC</button>
+      </div>
+
+      <!-- Quick Suggested Jumps -->
+      <div id="search-suggestions" class="p-3 bg-slate-950/50 border-b border-slate-800 flex flex-wrap items-center gap-1.5 text-xs">
+        <span class="text-slate-500 text-[11px] mr-1">Quick jumps:</span>
+        <button onclick="quickSearchTag('WorkDrive')" class="px-2 py-0.5 rounded-md bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-mono text-[11px] border border-emerald-500/30">🎬 WorkDrive Videos</button>
+        <button onclick="quickSearchTag('Gemini')" class="px-2 py-0.5 rounded-md bg-slate-800 hover:bg-slate-700 text-cyan-300 font-mono text-[11px]">Gemini Key</button>
+        <button onclick="quickSearchTag('Dashboard Data Entry')" class="px-2 py-0.5 rounded-md bg-slate-800 hover:bg-slate-700 text-violet-300 font-mono text-[11px]">Dashboard Data Entry</button>
+        <button onclick="quickSearchTag('GoDaddy')" class="px-2 py-0.5 rounded-md bg-slate-800 hover:bg-slate-700 text-blue-300 font-mono text-[11px]">GoDaddy DNS</button>
+        <button onclick="quickSearchTag('Website Bible')" class="px-2 py-0.5 rounded-md bg-slate-800 hover:bg-slate-700 text-amber-300 font-mono text-[11px]">Website Bible</button>
+      </div>
+
+      <div id="search-results-list" class="overflow-y-auto p-3 space-y-1 divide-y divide-slate-800/40">
+        <div class="py-8 text-center text-slate-500 text-sm">
+          Type keywords to search across all WorkDrive videos, 25 apps, 21 domains, 14 systems, 31 tasks, and 11 manuals.
+        </div>
+      </div>
+
+      <div class="px-4 py-2 bg-slate-950 border-t border-slate-800 text-[11px] text-slate-500 flex justify-between">
+        <span>Use <kbd class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">↑</kbd> <kbd class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">↓</kbd> to navigate, <kbd class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">Enter</kbd> to open</span>
+        <span>Instant Full-Text Search</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Environment Key Paste Modal -->
+  <div id="bulk-paste-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-xl shadow-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Bulk Environment Variables Paste
+        </h3>
+        <button onclick="closeBulkPasteModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Paste your <code class="bg-slate-800 text-cyan-300 px-1 py-0.5 rounded">.env</code> lines or key-value pairs below. The portal will automatically detect and match them to Google AI Studio, Supabase, Vercel, and GitHub cards in your vault!
+      </p>
+      <textarea id="bulk-paste-input" rows="8" placeholder="GEMINI_API_KEY=AIzaSy...&#10;SUPABASE_URL=https://...&#10;SUPABASE_ANON_KEY=eyJ...&#10;WAALAXY_API_KEY=..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs font-mono text-emerald-400 focus:outline-none focus:border-indigo-500"></textarea>
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button onclick="closeBulkPasteModal()" class="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-700">Cancel</button>
+        <button onclick="handleProcessBulkPaste()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-500/20">Process & Save to Vault</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Custom Secret / API Key Modal -->
+  <div id="custom-secret-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          Add Custom Secret or API Key to Vault
+        </h3>
+        <button onclick="closeCustomSecretModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <form id="custom-secret-form" onsubmit="handleSaveCustomSecret(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1">Service or Tool Name *</label>
+          <input type="text" id="cs-name" required placeholder="e.g. OpenAI / Resend / Webhook Secret" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1">Category / Project</label>
+          <input type="text" id="cs-category" placeholder="e.g. AI Tools / Client: KMS Pharma / Hosting" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1">Account Email / Login Username</label>
+          <input type="text" id="cs-login" placeholder="e.g. aitoolsteejay@gmail.com" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1">Secret / API Key Value *</label>
+          <input type="password" id="cs-secret" required placeholder="Paste secret or key here..." class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1">Notes / Instructions</label>
+          <textarea id="cs-notes" rows="2" placeholder="Where is this configured? (e.g. Vercel env var)" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500"></textarea>
+        </div>
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+          <button type="button" onclick="closeCustomSecretModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-500/20">Save to Vault</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Document Deep Dive Reader Modal with Split TOC -->
+  <div id="doc-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-5xl shadow-2xl h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Doc Header -->
+      <div class="flex items-center justify-between px-6 py-3.5 border-b border-slate-800 bg-slate-950/60">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono" id="doc-modal-cat">MANUAL</span>
+          <h2 class="text-sm sm:text-base font-bold text-white truncate max-w-xl" id="doc-modal-title">Document Title</h2>
+        </div>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button onclick="copyDocModalContent()" class="text-xs px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 flex items-center gap-1.5 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+            <span class="hidden sm:inline">Copy Raw</span>
+          </button>
+          <button onclick="closeDocModal()" class="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">✕</button>
+        </div>
+      </div>
+
+      <!-- Split Layout: Table of Contents + Document Body -->
+      <div class="flex-1 min-h-0 flex overflow-hidden">
+        
+        <!-- Table of Contents Sidebar -->
+        <aside class="w-64 border-r border-slate-800 p-4 overflow-y-auto hidden md:block bg-slate-950/40 space-y-2 flex-shrink-0">
+          <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Table of Contents</div>
+          <nav id="doc-toc-nav" class="space-y-0.5 text-xs">
+            <!-- Injected dynamically -->
+          </nav>
+        </aside>
+
+        <!-- Document Content Body -->
+        <div class="flex-1 overflow-y-auto p-6 sm:p-8 space-y-4 font-normal text-slate-300 text-sm leading-relaxed prose prose-invert max-w-none" id="doc-modal-body">
+          <!-- Rendered markdown content -->
+        </div>
+      </div>
+
+      <!-- Doc Footer -->
+      <div class="px-6 py-2.5 bg-slate-950 border-t border-slate-800 text-xs text-slate-500 flex justify-between items-center">
+        <span id="doc-modal-path" class="font-mono text-[11px] truncate max-w-md"></span>
+        <button onclick="closeDocModal()" class="px-3 py-1 bg-slate-800 text-slate-300 hover:text-white rounded-md text-xs font-semibold">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-slate-900 border border-emerald-500/50 text-white text-xs px-4 py-3 rounded-xl shadow-2xl transform translate-y-16 opacity-0 transition-all duration-200 pointer-events-none">
+    <svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    <span id="toast-message" class="font-medium">Action confirmed</span>
+  </div>
+
+  <!-- Data Script + Application Core -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

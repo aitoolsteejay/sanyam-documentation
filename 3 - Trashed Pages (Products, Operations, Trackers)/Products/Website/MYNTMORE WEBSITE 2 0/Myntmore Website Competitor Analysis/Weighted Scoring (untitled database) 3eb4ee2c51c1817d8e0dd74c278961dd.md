@@ -1,0 +1,10 @@
+# Weighted Scoring (untitled database)
+
+The original weighted-scoring database had no title; this page holds its rows.
+
+| Competitor Name | Design Quality (1–5) Weight: 20% | Messaging Clarity (1–5) Weight: 20% | UX & Navigation (1–5) Weight: 15% | Speed Performance (1–5) Weight: 10% | SEO Strength (1–5) Weight: 10% | Content Depth (1–5) Weight: 10% | Conversion Optimization (1–5) Weight: 10% | Final Score /35 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Gliped | 4 | 5 | 4 | 3 | 3 | 3 | 4 | 26 |
+| Oh My Brand | 4 | 4 | 4 | 3 | 4 | 4 | 4 | 27 |
+| GrowedIn | 4 | 5 | 4 | 3 | 4 | 4 | 4 | 28 |
+| The Growth Square | 4 | 4 | 4 | 3 | 3 | 3 | 4 | 25 |

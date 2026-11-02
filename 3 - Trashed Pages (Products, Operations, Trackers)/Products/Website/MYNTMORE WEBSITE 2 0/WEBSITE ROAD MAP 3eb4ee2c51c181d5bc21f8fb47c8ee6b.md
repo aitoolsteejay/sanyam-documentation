@@ -1,0 +1,99 @@
+# WEBSITE ROAD MAP
+
+## 🔧 Scope & Focus Areas
+
+### 1) CRO (Conversion Rate Optimization)
+
+- Clear, singular CTAs per page (Lead, Demo, Newsletter)
+- Frictionless forms (multi-step optional, minimal fields)
+- Trust signals: client logos, case studies, testimonials
+- Analytics plan: heatmaps, click maps, funnel tracking
+- A/B roadmap: hero headline, CTA copy, pricing layout, social proof blocks
+
+### 2) Content
+
+- Messaging pillars aligned to ICPs (Founders, Growth, RevOps)
+- SEO-driven structure (primary + secondary keywords, intent mapping)
+- Pages: Services, Process, Case Studies, Blog/Guides, About, Careers
+- Assets: lead magnets, checklists, frameworks, pitch decks
+- Tone: direct, outcomes-first, proof-backed
+
+### 3) UI/UX
+
+- Modern, minimalist; mobile-first; accessible (WCAG AA basics)
+- Clear hierarchy; sticky CTAs; persistent nav + utility footer
+- Micro-interactions where they add clarity (hover states, progress)
+- Wireframes → high-fidelity mockups → interactive prototype
+
+### 4) Structure (IA & Sitemap)
+
+- Top Nav: Home • Services • Case Studies • Resources • About • Contact
+- Resources: Blog, Guides, Templates, Webinars
+- Footer: Legal, Social, Careers, Newsletter, Contact
+- Scalable CMS for case studies & blogs
+
+### 5) Themes (Visual System)
+
+- Palette: growth-tech (dark neutrals + accent)
+- Typography: geometric sans + mono accent
+- Components: cards, badges, chips, accordions, tabs
+- Motion: subtle easing, <300ms, purposeful
+
+### 6) Custom Development (CSS & Beyond)
+
+- Tailored CSS tokens (colors, spacing, radius, shadows)
+- Performance: image compression, lazy loading, prefetching
+- Components: testimonial slider, logo marquee, pricing table
+- Integrations: CRM (HubSpot/Pipedrive), newsletter, LinkedIn lead capture, analytics
+
+### 7) Platform
+
+- **Primary**: Webflow (speed, CMS, animations, SEO controls)
+- **Alt (content-heavy/engineering)**: WordPress (healthy stack, block editor or lightweight builder)
+- CDN + SSL + backups + roles/permissions
+
+---
+
+## 🗺️ Project Plan & Timeline
+
+| Phase | Duration | Key Deliverables |
+| --- | --- | --- |
+| **Strategy** | **5 days** | Discovery, competitor scan, ICPs & messaging pillars, sitemap, wireframes |
+| **Content** | **5 days** | Page outlines, SEO brief, on-page copy (H1–H3, CTAs), meta + schema checklist |
+| **Design** | **7 days** | UI kit, component library, high-fidelity screens, interactive prototype |
+| **Development** | **10 days** | Webflow/WordPress setup, CMS, custom CSS, integrations, responsive builds |
+| **Testing & Launch** | **3 days** | QA (devices/browsers), performance pass, SEO checks, redirects, go-live runbook |
+
+**Total:** ~30 days (includes review buffers)
+
+---
+
+## ✅ Definition of Done (DoD) — Checklists
+
+### SEO & Analytics
+
+- [ ]  Titles, metas, OGs, favicons complete
+- [ ]  Schema (Organization, Article, Breadcrumb, FAQ where relevant)
+- [ ]  301 redirects mapped; robots.txt & sitemap.xml live
+- [ ]  GA4 + GSC + heatmaps (Hotjar/Clarity) configured
+- [ ]  UTM strategy for all primary CTAs
+
+### Performance & Accessibility
+
+- [ ]  LCP < 2.5s on mobile; CLS < 0.1; TBT < 300ms (lab)
+- [ ]  Alt text, focus states, color contrast AA
+- [ ]  Image compression & lazy loading in place
+
+### Content & CMS
+
+- [ ]  Case Study template + 2–3 initial stories
+- [ ]  Blog template + 3 pillar posts
+- [ ]  Reusable sections: hero, proof, process, pricing, FAQs, CTA
+
+### Integrations
+
+- [ ]  CRM forms + hidden fields (source, campaign)
+- [ ]  Newsletter double opt-in
+- [ ]  LinkedIn lead gen / webhook tested
+
+---
