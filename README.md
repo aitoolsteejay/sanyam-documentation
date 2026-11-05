@@ -53,10 +53,10 @@ Every production walkthrough recorded by Sanyam is hosted on **Zoho WorkDrive** 
 
 ## 🔑 Private Credentials & API Keys Vault
 
-- **Zero-Leak Guarantee**: All passwords, tokens, and API keys are stored strictly in browser `localStorage`. Nothing is ever sent to any remote server or written to disk.
-- **Bulk `.env` Paste**: Paste standard `.env` blocks (`GEMINI_API_KEY=...`, `NEXT_PUBLIC_SUPABASE_URL=...`) for instant multi-key assignment.
+- **Browser-only storage**: Passwords, tokens, and API keys you type into the vault are kept in this browser's `localStorage` (unencrypted) and are not sent anywhere by the portal. Anyone with access to this browser profile can read them, and the page also loads third-party scripts (Tailwind CDN, Google Fonts), so treat it as a convenience, not a password manager.
+- **Bulk `.env` Paste**: Paste standard `.env` blocks (`GEMINI_API_KEY=...`, `NEXT_PUBLIC_SUPABASE_URL=...`). The first secret-looking variable for Gemini / Supabase / Waalaxy fills that system's card; every other variable is saved as its own entry (re-pasting updates it instead of duplicating).
 - **Custom Secrets**: Add arbitrary credentials and tokens.
-- **JSON Backup**: Export and re-import encrypted/sanitized configuration backups.
+- **JSON Backup**: Export and re-import the vault as a **plain-text** JSON file. It contains every secret in the clear, so store it somewhere safe and delete stray copies.
 
 ---
 
@@ -78,7 +78,7 @@ Every production walkthrough recorded by Sanyam is hosted on **Zoho WorkDrive** 
 ├── package.json                # Project scripts
 ├── 1 - Handover Hub/           # Raw Notion Handover Hub markdown documents
 ├── 2 - AI Agents Workspace/    # 9 core operational sections (275 markdown files)
-├── 3 - Trashed Pages/          # Production trackers & databases (460 files)
+├── 3 - Trashed Pages/          # Production trackers & databases (523 files)
 └── FILE_INDEX.txt              # Complete index of all 879 Notion files
 ```
 

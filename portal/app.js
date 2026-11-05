@@ -117,8 +117,8 @@
     if (navMissing) {
       navMissing.innerText = missingCount > 0 ? `${missingCount} needed` : 'All set';
       navMissing.className = missingCount > 0 
-        ? 'ml-auto text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold'
-        : 'ml-auto text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold';
+        ? 'ml-auto text-[10px] px-1.5 py-0.5 rounded bg-[#F9B318]/20 text-[#8F5B00] font-mono font-bold'
+        : 'ml-auto text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono font-bold';
     }
 
     const totalChecklist = (DATA.checklist || []).length;
@@ -515,7 +515,7 @@
                 ✅
               </div>
               <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#F9B318] text-[#0F172A]">
-                53 Checkpoints
+                ${stats.checklist_count || (DATA.checklist || []).length} Checkpoints
               </span>
             </div>
             <h3 class="text-sm font-bold text-[#0F172A] mt-3 group-hover:text-[#1546D9] transition-colors">Handover Checklist</h3>
@@ -1027,11 +1027,6 @@
     if (container) container.innerHTML = renderLoomsContent();
   };
 
-  window.filterLoomsGrid = function () {
-    const container = document.getElementById('looms-grid-container');
-    if (container) container.innerHTML = renderLoomsContent();
-  };
-
   /* -------------------------------------------------------------
      3. TAB: CREDENTIALS & API KEYS VAULT
   ------------------------------------------------------------- */
@@ -1299,6 +1294,12 @@
 
     let parsed = 0;
     const lines = text.split('\n');
+    // System cards already filled by this paste: later matching vars get their own entry instead of overwriting
+    const filledThisPaste = new Set();
+    const findSystem = (...terms) => Object.values(vaultState).find(s => {
+      const name = (s.name || '').toLowerCase();
+      return !s.isCustom && terms.some(t => name.includes(t));
+    });
 
     lines.forEach(line => {
       const match = line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.*)$/);
@@ -1309,29 +1310,31 @@
           val = val.slice(1, -1);
         }
 
-        if (key.includes('GEMINI')) {
-          const sys = Object.values(vaultState).find(s => s.name.toLowerCase().includes('gemini') || s.name.toLowerCase().includes('ai studio'));
-          if (sys) { sys.apiKey = val; parsed++; }
-        } else if (key.includes('SUPABASE')) {
-          const sys = Object.values(vaultState).find(s => s.name.toLowerCase().includes('supabase'));
-          if (sys) { sys.apiKey = val; parsed++; }
-        } else if (key.includes('WAALAXY')) {
-          const sys = Object.values(vaultState).find(s => s.name.toLowerCase().includes('waalaxy') || s.name.toLowerCase().includes('outreach'));
-          if (sys) { sys.apiKey = val; parsed++; }
+        let sys = null;
+        if (key.includes('GEMINI')) sys = findSystem('gemini', 'ai studio');
+        else if (key.includes('SUPABASE')) sys = findSystem('supabase');
+        else if (key.includes('WAALAXY')) sys = findSystem('waalaxy', 'outreach');
+
+        // Only a secret-looking var (e.g. SUPABASE_ANON_KEY, not SUPABASE_URL) fills the system card, once per paste
+        const isSecret = /KEY|TOKEN|SECRET/.test(key);
+        if (sys && isSecret && !filledThisPaste.has(sys.id)) {
+          sys.apiKey = val;
+          filledThisPaste.add(sys.id);
         } else {
-          const id = 'custom_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+          // Stable id per variable name so re-pasting the same .env updates entries instead of duplicating them
+          const id = 'env_' + key;
           vaultState[id] = {
             id: id,
             name: key,
-            category: 'Environment Variable',
+            category: sys ? sys.name : 'Environment Variable',
             login: '',
             apiKey: val,
             password: '',
             notes: 'Imported via Bulk .env paste',
             isCustom: true
           };
-          parsed++;
         }
+        parsed++;
       }
     });
 
@@ -1423,8 +1426,14 @@
     reader.onload = function (ev) {
       try {
         const imported = JSON.parse(ev.target.result);
-        if (typeof imported === 'object' && imported !== null) {
-          vaultState = Object.assign({}, vaultState, imported);
+        if (typeof imported === 'object' && imported !== null && !Array.isArray(imported)) {
+          // Ids end up inside inline onclick handlers, so only accept plain ids and keep each entry's id equal to its key
+          const clean = {};
+          Object.entries(imported).forEach(([id, item]) => {
+            if (!/^[\w-]+$/.test(id) || typeof item !== 'object' || item === null) return;
+            clean[id] = Object.assign({}, item, { id: id, name: String(item.name || id) });
+          });
+          vaultState = Object.assign({}, vaultState, clean);
           saveVaultState();
           showToast('Vault successfully imported!');
           if (currentTab === 'vault') {
@@ -1460,6 +1469,9 @@
 
   function renderAppsTab() {
     const apps = DATA.apps || [];
+    const internalCount = apps.filter(a => a['Type'] === 'Internal').length;
+    const clientCount = apps.filter(a => a['Type'] === 'Client').length;
+    const liveCount = apps.filter(a => a['Status'] === 'Live - in use').length;
 
     return `
       <div class="tab-pane space-y-6">
@@ -1492,9 +1504,9 @@
 
         <div class="flex flex-wrap items-center gap-2 text-xs" id="apps-filter-pills">
           <button onclick="setAppTypeFilter('all', this)" class="app-type-pill px-3 py-1.5 rounded-lg bg-[#1546D9] text-white font-bold shadow-sm">All Projects (${apps.length})</button>
-          <button onclick="setAppTypeFilter('Internal', this)" class="app-type-pill px-3 py-1.5 rounded-lg bg-[#F6F5F0] text-slate-700 hover:bg-[#EDECE6] border border-[#D8D6CE] font-semibold">Internal Tools (17)</button>
-          <button onclick="setAppTypeFilter('Client', this)" class="app-type-pill px-3 py-1.5 rounded-lg bg-[#F6F5F0] text-slate-700 hover:bg-[#EDECE6] border border-[#D8D6CE] font-semibold">Client Tools (8)</button>
-          <button onclick="setAppTypeFilter('Live - in use', this)" class="app-type-pill px-3 py-1.5 rounded-lg bg-[#F6F5F0] text-slate-700 hover:bg-[#EDECE6] border border-[#D8D6CE] font-semibold">Live In-Use</button>
+          <button onclick="setAppTypeFilter('Internal', this)" class="app-type-pill px-3 py-1.5 rounded-lg bg-[#F6F5F0] text-slate-700 hover:bg-[#EDECE6] border border-[#D8D6CE] font-semibold">Internal Tools (${internalCount})</button>
+          <button onclick="setAppTypeFilter('Client', this)" class="app-type-pill px-3 py-1.5 rounded-lg bg-[#F6F5F0] text-slate-700 hover:bg-[#EDECE6] border border-[#D8D6CE] font-semibold">Client Tools (${clientCount})</button>
+          <button onclick="setAppTypeFilter('Live - in use', this)" class="app-type-pill px-3 py-1.5 rounded-lg bg-[#F6F5F0] text-slate-700 hover:bg-[#EDECE6] border border-[#D8D6CE] font-semibold">Live In-Use (${liveCount})</button>
         </div>
 
         <div id="apps-view-container">
@@ -1521,7 +1533,7 @@
     return apps.filter(app => {
       if (activeAppFilter === 'Internal' && app['Type'] !== 'Internal') return false;
       if (activeAppFilter === 'Client' && app['Type'] !== 'Client') return false;
-      if (activeAppFilter === 'Live - in use' && !app['Status']?.includes('in use')) return false;
+      if (activeAppFilter === 'Live - in use' && app['Status'] !== 'Live - in use') return false;
 
       if (q) {
         const text = `${app['Project']} ${app['System']} ${app['Framework']} ${app['What it is']} ${app['GitHub repo']} ${app['Keys used (names only)']}`.toLowerCase();
@@ -1541,7 +1553,7 @@
         ${list.map(app => {
           const status = app['Status'] || '';
           let statusColor = 'bg-[#EDECE6] text-slate-700 border border-[#D8D6CE]';
-          if (status.includes('in use')) statusColor = 'bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold';
+          if (status === 'Live - in use') statusColor = 'bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold';
           else if (status.includes('progress')) statusColor = 'bg-[#FFFBEB] text-[#8F5B00] border border-[#F9B318]/50 font-bold';
           else if (status.includes('Stuck') || status.includes('Failed')) statusColor = 'bg-red-50 text-red-700 border border-red-300 font-bold';
 
@@ -1670,7 +1682,7 @@
                     </td>
                     <td class="py-3 px-3 font-mono text-[11px] text-slate-700">${escapeHtml(app['Framework'] || '—')}</td>
                     <td class="py-3 px-3">
-                      <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${app['Status']?.includes('in use') ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-[#EDECE6] text-slate-700'}">
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${app['Status'] === 'Live - in use' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-[#EDECE6] text-slate-700'}">
                         ${escapeHtml(app['Status'] || '—')}
                       </span>
                     </td>
@@ -1961,7 +1973,7 @@
         <div class="border-b border-[#D8D6CE] pb-4">
           <h1 class="text-xl sm:text-2xl font-bold text-[#0F172A] flex items-center gap-2">
             AI Lead Magnets & Website Tools
-            <span class="text-xs px-2.5 py-0.5 rounded-full bg-[#1546D9]/10 text-[#1546D9] border border-[#1546D9]/20 font-mono font-bold">10 Tools</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-[#1546D9]/10 text-[#1546D9] border border-[#1546D9]/20 font-mono font-bold">${tools.length} Tools</span>
           </h1>
           <p class="text-xs text-[#64748B] mt-1">
             Free high-conversion AI tools embedded on <a href="https://www.myntmore.com/tools" target="_blank" class="text-[#1546D9] underline font-medium">myntmore.com/tools</a>, built on Lovable & Next.js with Gemini 2.5 Flash.
@@ -2314,7 +2326,7 @@
           <div>
             <h1 class="text-xl sm:text-2xl font-bold text-[#0F172A] flex items-center gap-2">
               Master Handover Checklist
-              <span class="text-xs px-2.5 py-0.5 rounded-full bg-[#1546D9]/10 text-[#1546D9] border border-[#1546D9]/20 font-mono font-bold">${checked}/${total} Done</span>
+              <span id="checklist-done-count" class="text-xs px-2.5 py-0.5 rounded-full bg-[#1546D9]/10 text-[#1546D9] border border-[#1546D9]/20 font-mono font-bold">${checked}/${total} Done</span>
             </h1>
             <p class="text-xs text-[#64748B] mt-1">
               Click items as tasks are verified and transferred. Changes persist in your browser.
@@ -2329,17 +2341,17 @@
         <div class="hub-card p-4 space-y-2">
           <div class="flex items-center justify-between text-xs">
             <span class="text-[#0F172A] font-semibold">Handover Completion Progress</span>
-            <span class="font-bold text-[#1546D9] font-mono">${pct}%</span>
+            <span id="checklist-progress-pct" class="font-bold text-[#1546D9] font-mono">${pct}%</span>
           </div>
           <div class="w-full h-2.5 rounded-full bg-[#EDECE6] border border-[#D8D6CE] overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-[#1546D9] via-indigo-600 to-[#F9B318] rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+            <div id="checklist-progress-bar" class="h-full bg-gradient-to-r from-[#1546D9] via-indigo-600 to-[#F9B318] rounded-full transition-all duration-300" style="width: ${pct}%"></div>
           </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-2 text-xs">
           <button onclick="setChecklistFilter('all', this)" class="chk-filter-pill px-3 py-1.5 rounded-lg bg-[#1546D9] text-white font-semibold">All Items (${total})</button>
-          <button onclick="setChecklistFilter('pending', this)" class="chk-filter-pill px-3 py-1.5 rounded-lg bg-white border border-[#D8D6CE] text-[#334155] hover:text-[#0F172A] hover:bg-[#F6F5F0]">Pending Only (${total - checked})</button>
-          <button onclick="setChecklistFilter('completed', this)" class="chk-filter-pill px-3 py-1.5 rounded-lg bg-white border border-[#D8D6CE] text-[#334155] hover:text-[#0F172A] hover:bg-[#F6F5F0]">Completed (${checked})</button>
+          <button onclick="setChecklistFilter('pending', this)" class="chk-filter-pill px-3 py-1.5 rounded-lg bg-white border border-[#D8D6CE] text-[#334155] hover:text-[#0F172A] hover:bg-[#F6F5F0]">Pending Only (<span id="chk-pending-count">${total - checked}</span>)</button>
+          <button onclick="setChecklistFilter('completed', this)" class="chk-filter-pill px-3 py-1.5 rounded-lg bg-white border border-[#D8D6CE] text-[#334155] hover:text-[#0F172A] hover:bg-[#F6F5F0]">Completed (<span id="chk-completed-count">${checked}</span>)</button>
           <button onclick="setChecklistFilter('high', this)" class="chk-filter-pill px-3 py-1.5 rounded-lg bg-white border border-[#D8D6CE] text-red-600 hover:text-red-700 hover:bg-[#F6F5F0]">High Priority</button>
         </div>
 
@@ -2420,10 +2432,19 @@
     const checked = Object.values(checklistState).filter(Boolean).length;
     const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
     
-    const countEl = document.querySelector('.hub-card .text-[#1546D9].font-mono');
-    const barEl = document.querySelector('.hub-card .bg-gradient-to-r');
-    if (countEl) countEl.innerText = `${pct}%`;
+    const doneEl = document.getElementById('checklist-done-count');
+    const pctEl = document.getElementById('checklist-progress-pct');
+    const barEl = document.getElementById('checklist-progress-bar');
+    const pendingEl = document.getElementById('chk-pending-count');
+    const completedEl = document.getElementById('chk-completed-count');
+    if (doneEl) doneEl.innerText = `${checked}/${total} Done`;
+    if (pctEl) pctEl.innerText = `${pct}%`;
     if (barEl) barEl.style.width = `${pct}%`;
+    if (pendingEl) pendingEl.innerText = total - checked;
+    if (completedEl) completedEl.innerText = checked;
+
+    // Re-render rows so strike-through and the pending/completed filters reflect the new state
+    filterChecklistItems();
   };
 
   window.filterChecklistItems = function () {
@@ -2469,11 +2490,14 @@
     if (!list) return;
 
     selectedSearchResultIndex = 0;
+    // Clear previous results so Enter/arrow keys can't trigger a result that is no longer shown
+    window.__globalSearchResults = [];
     const q = query.trim().toLowerCase();
     if (!q) {
+      const workdriveCount = (DATA.looms || []).filter(v => v.hasWorkdrive).length;
       list.innerHTML = `
         <div class="py-8 text-center text-[#64748B] text-xs leading-relaxed">
-          Search across 12 Zoho WorkDrive recordings, 25 applications, 21 domains, 14 systems & secrets, 31 recurring SOPs, and 11 manuals.
+          Search across ${workdriveCount} Zoho WorkDrive recordings, ${(DATA.apps || []).length} applications, ${(DATA.domains || []).length} domains, ${(DATA.systems || []).length} systems & secrets, ${(DATA.recurring_tasks || []).length} recurring SOPs, and ${Object.keys(DATA.docs || {}).length} manuals.
         </div>
       `;
       return;
@@ -2680,8 +2704,26 @@
     }).join('');
   }
 
+  // Keep the static counts in index.html in sync with the compiled data
+  function initDataCounts() {
+    const counts = {
+      apps: (DATA.apps || []).length,
+      domains: (DATA.domains || []).length,
+      systems: (DATA.systems || []).length,
+      recurring_tasks: (DATA.recurring_tasks || []).length,
+      lovable_tools: (DATA.lovable_tools || []).length,
+      client_projects: (DATA.client_projects || []).length,
+      docs: Object.keys(DATA.docs || {}).length
+    };
+    document.querySelectorAll('[data-count]').forEach(el => {
+      const n = counts[el.getAttribute('data-count')];
+      if (n !== undefined) el.textContent = n;
+    });
+  }
+
   // Startup
   initState();
+  initDataCounts();
   initWorkDriveHeaderQuickList();
   const initialHash = window.location.hash.replace('#', '') || 'overview';
   switchTab(initialHash, false);

@@ -119,7 +119,7 @@
         <!-- Checklist Quick Progress Pill -->
         <button onclick="switchTab('checklist')" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white hover:bg-[#F6F5F0] border border-[#D8D6CE] text-slate-700 text-xs font-semibold transition-all shadow-sm">
           <svg class="w-3.5 h-3.5 text-[#F9B318]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          <span id="header-checklist-progress" class="font-bold font-mono text-slate-800">0/53</span>
+          <span id="header-checklist-progress" class="font-bold font-mono text-slate-800">0/–</span>
         </button>
 
         <!-- Live Properties Quick Dropdown -->
@@ -169,15 +169,15 @@
       </button>
       <button onclick="switchTab('apps')" data-top-tab="apps" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-700 hover:bg-[#DFDDD6] hover:text-[#0F172A] transition-all flex items-center gap-1.5">
         <span>💻</span>
-        <span>Apps & Repos (25)</span>
+        <span>Apps & Repos (<span data-count="apps">25</span>)</span>
       </button>
       <button onclick="switchTab('domains')" data-top-tab="domains" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-700 hover:bg-[#DFDDD6] hover:text-[#0F172A] transition-all flex items-center gap-1.5">
         <span>🌐</span>
-        <span>Domains (21)</span>
+        <span>Domains (<span data-count="domains">21</span>)</span>
       </button>
       <button onclick="switchTab('tasks')" data-top-tab="tasks" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-700 hover:bg-[#DFDDD6] hover:text-[#0F172A] transition-all flex items-center gap-1.5">
         <span>🔁</span>
-        <span>Operating SOPs (31)</span>
+        <span>Operating SOPs (<span data-count="recurring_tasks">31</span>)</span>
       </button>
       <button onclick="switchTab('checklist')" data-top-tab="checklist" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-700 hover:bg-[#DFDDD6] hover:text-[#0F172A] transition-all flex items-center gap-1.5">
         <span>✅</span>
@@ -193,7 +193,7 @@
       </button>
       <button onclick="switchTab('docs')" data-top-tab="docs" class="top-nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-700 hover:bg-[#DFDDD6] hover:text-[#0F172A] transition-all flex items-center gap-1.5">
         <span>📚</span>
-        <span>System Bibles (11)</span>
+        <span>System Bibles (<span data-count="docs">11</span>)</span>
       </button>
     </div>
   </nav>
@@ -244,19 +244,19 @@
           <button onclick="switchTab('apps')" data-tab="apps" class="nav-item">
             <svg class="w-4 h-4 text-[#1546D9]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
             <span>Apps & Repos Tracker</span>
-            <span class="ml-auto text-[11px] text-slate-500 font-mono">25</span>
+            <span class="ml-auto text-[11px] text-slate-500 font-mono" data-count="apps">25</span>
           </button>
 
           <button onclick="switchTab('domains')" data-tab="domains" class="nav-item">
             <svg class="w-4 h-4 text-[#1546D9]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
             <span>Domains & Inboxes</span>
-            <span class="ml-auto text-[11px] text-slate-500 font-mono">21</span>
+            <span class="ml-auto text-[11px] text-slate-500 font-mono" data-count="domains">21</span>
           </button>
 
           <button onclick="switchTab('tasks')" data-tab="tasks" class="nav-item">
             <svg class="w-4 h-4 text-[#1546D9]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <span>Recurring Rhythm & SOPs</span>
-            <span class="ml-auto text-[11px] text-slate-500 font-mono">31</span>
+            <span class="ml-auto text-[11px] text-slate-500 font-mono" data-count="recurring_tasks">31</span>
           </button>
         </nav>
       </div>
@@ -270,13 +270,13 @@
           <button onclick="switchTab('leadmagnets')" data-tab="leadmagnets" class="nav-item">
             <svg class="w-4 h-4 text-[#F9B318]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
             <span>AI Lead Magnets</span>
-            <span class="ml-auto text-[11px] text-slate-500 font-mono">10</span>
+            <span class="ml-auto text-[11px] text-slate-500 font-mono" data-count="lovable_tools">8</span>
           </button>
 
           <button onclick="switchTab('clients')" data-tab="clients" class="nav-item">
             <svg class="w-4 h-4 text-[#1546D9]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
             <span>Client Deliverables</span>
-            <span class="ml-auto text-[11px] text-slate-500 font-mono">8</span>
+            <span class="ml-auto text-[11px] text-slate-500 font-mono" data-count="client_projects">8</span>
           </button>
 
           <button onclick="switchTab('growth')" data-tab="growth" class="nav-item">
@@ -295,7 +295,7 @@
           <button onclick="switchTab('docs')" data-tab="docs" class="nav-item">
             <svg class="w-4 h-4 text-[#1546D9]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             <span>System Bibles & Docs</span>
-            <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-[#1546D9]/10 text-[#1546D9] font-mono font-bold">11</span>
+            <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-[#1546D9]/10 text-[#1546D9] font-mono font-bold" data-count="docs">11</span>
           </button>
         </nav>
       </div>
@@ -342,7 +342,7 @@
 
       <div id="search-results-list" class="overflow-y-auto p-3 space-y-1 divide-y divide-[#EAE8E0] bg-white">
         <div class="py-8 text-center text-slate-500 text-sm">
-          Type keywords to search across all WorkDrive videos, 25 apps, 21 domains, 14 systems, 31 tasks, and 11 manuals.
+          Type keywords to search across all WorkDrive videos, <span data-count="apps">25</span> apps, <span data-count="domains">21</span> domains, <span data-count="systems">14</span> systems, <span data-count="recurring_tasks">31</span> tasks, and <span data-count="docs">11</span> manuals.
         </div>
       </div>
 
