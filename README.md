@@ -1,6 +1,6 @@
 # ⚡ MYNTMORE AI Prompt Library
 
-> Production-ready AI prompt engineering library organized specifically for Myntmore's core systems: **Website**, **Dashboard**, and **Outreach Tool**.
+> Production-ready AI prompt engineering library organized specifically for Myntmore's core systems: **Website**, **Dashboard**, **Outreach Tool**, and **Workshop**.
 
 Built for instant filtering, real-time search, automated variable parameter filling, and single-click copying into **Claude Code**, **ChatGPT**, and **Cursor**.
 
@@ -34,7 +34,8 @@ Connect the repository to Vercel and it deploys automatically.
 | **🌐 Website** | **56** | Next.js architecture, Core Web Vitals, SEO audits, schema markup, blog generation, lead magnets, conversion copy, releases. | Codex / Claude Code, ChatGPT, Cursor |
 | **📊 Dashboard** | **40** | Supabase database migrations, Row-Level Security (RLS) policies, client analytics, KPI cards, weekly data entry, targets, high scores. | Codex / Claude Code |
 | **🚀 Outreach Tool** | **157** | Guardrails, wizard flow, campaign lists, lead labels, CSV handling, API routes, security hardening, migrations, testing, and troubleshooting. | Claude Code |
-| **Total** | **253** | Complete production prompt library for technical growth operations. | All AI Coding Assistants |
+| **🎨 Workshop** | **116** | Claude Code session primers, fixes & hardening, Gemini AI schemas, wizard step lifecycle, branding & UI, data contracts, Razorpay payments, testing harnesses, refactors, ops runbooks, and white-label spin-offs. | Claude Code |
+| **Total** | **369** | Complete production prompt library for technical growth operations. | All AI Coding Assistants |
 
 ---
 

@@ -30,6 +30,7 @@
             catWeb: '#1546D9',
             catDash: '#059669',
             catOutreach: '#7C3AED',
+            catWorkshop: '#D97706',
           },
           fontFamily: {
             sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
@@ -82,6 +83,10 @@
           <span class="w-2 h-2 rounded-full bg-[#7C3AED]"></span>
           Outreach: <span id="count-outreach" class="font-mono text-slate-800 font-semibold">0</span>
         </button>
+        <button onclick="filterCategory('Workshop')" id="stat-workshop" class="px-2.5 py-1 rounded-lg hover:bg-white/60 transition-all flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-[#D97706]"></span>
+          Workshop: <span id="count-workshop" class="font-mono text-slate-800 font-semibold">0</span>
+        </button>
       </div>
 
       <!-- Right Action Buttons -->
@@ -107,7 +112,7 @@
           AI Prompt Library
         </h1>
         <p class="text-sm sm:text-base text-slate-500 mt-1.5">
-          Curated, production-tested prompts organized for Myntmore's core systems: <strong class="text-slate-700 font-medium">Website</strong>, <strong class="text-slate-700 font-medium">Dashboard</strong>, and <strong class="text-slate-700 font-medium">Outreach Tool</strong>.
+          Curated, production-tested prompts organized for Myntmore's core systems: <strong class="text-slate-700 font-medium">Website</strong>, <strong class="text-slate-700 font-medium">Dashboard</strong>, <strong class="text-slate-700 font-medium">Outreach Tool</strong>, and <strong class="text-slate-700 font-medium">Workshop</strong>.
         </p>
       </div>
 
@@ -131,6 +136,11 @@
           <span class="w-2.5 h-2.5 rounded-full bg-[#7C3AED]"></span>
           <span>Outreach Tool</span>
           <span id="badge-outreach" class="px-2 py-0.5 rounded-full text-xs font-mono bg-slate-200/80 text-slate-700">0</span>
+        </button>
+        <button id="cat-tab-workshop" onclick="filterCategory('Workshop')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#D97706]"></span>
+          <span>Workshop</span>
+          <span id="badge-workshop" class="px-2 py-0.5 rounded-full text-xs font-mono bg-slate-200/80 text-slate-700">0</span>
         </button>
       </div>
 
@@ -336,6 +346,7 @@
               <option value="Website">Website</option>
               <option value="Dashboard">Dashboard</option>
               <option value="Outreach Tool">Outreach Tool</option>
+              <option value="Workshop">Workshop</option>
             </select>
           </div>
           <div>

@@ -1,5 +1,5 @@
 // MYNTMORE AI Prompt Library - Client Application
-// Supports Website, Dashboard, and Outreach Tool Prompts
+// Supports Website, Dashboard, Outreach Tool, and Workshop Prompts
 // Search, Categorization, Tag Filtering, Variable Filling, Copying & Exporting
 
 (function () {
@@ -10,7 +10,7 @@
 
   // State
   let allPrompts = [];
-  let currentCategory = 'All'; // 'All' | 'Website' | 'Dashboard' | 'Outreach Tool'
+  let currentCategory = 'All'; // 'All' | 'Website' | 'Dashboard' | 'Outreach Tool' | 'Workshop'
   let currentSubcategory = 'All';
   let searchQuery = '';
   let selectedTag = 'All';
@@ -131,13 +131,15 @@
       All: allPrompts.length,
       Website: 0,
       Dashboard: 0,
-      'Outreach Tool': 0
+      'Outreach Tool': 0,
+      Workshop: 0
     };
 
     allPrompts.forEach(p => {
       if (p.category === 'Website') counts.Website++;
       else if (p.category === 'Dashboard') counts.Dashboard++;
       else if (p.category === 'Outreach Tool') counts['Outreach Tool']++;
+      else if (p.category === 'Workshop') counts.Workshop++;
     });
 
     // Top metrics
@@ -145,29 +147,34 @@
     const cWeb = document.getElementById('count-website');
     const cDash = document.getElementById('count-dashboard');
     const cOut = document.getElementById('count-outreach');
+    const cWs = document.getElementById('count-workshop');
 
     if (cAll) cAll.textContent = counts.All;
     if (cWeb) cWeb.textContent = counts.Website;
     if (cDash) cDash.textContent = counts.Dashboard;
     if (cOut) cOut.textContent = counts['Outreach Tool'];
+    if (cWs) cWs.textContent = counts.Workshop;
 
     // Tab badges
     const bAll = document.getElementById('badge-all');
     const bWeb = document.getElementById('badge-website');
     const bDash = document.getElementById('badge-dashboard');
     const bOut = document.getElementById('badge-outreach');
+    const bWs = document.getElementById('badge-workshop');
 
     if (bAll) bAll.textContent = counts.All;
     if (bWeb) bWeb.textContent = counts.Website;
     if (bDash) bDash.textContent = counts.Dashboard;
     if (bOut) bOut.textContent = counts['Outreach Tool'];
+    if (bWs) bWs.textContent = counts.Workshop;
 
     // Active pill highlight
     const tabMap = {
       All: 'cat-tab-all',
       Website: 'cat-tab-website',
       Dashboard: 'cat-tab-dashboard',
-      'Outreach Tool': 'cat-tab-outreach'
+      'Outreach Tool': 'cat-tab-outreach',
+      Workshop: 'cat-tab-workshop'
     };
 
     Object.entries(tabMap).forEach(([cat, id]) => {
@@ -348,6 +355,13 @@
           text: 'text-[#7C3AED]',
           border: 'border-purple-200',
           dot: 'bg-[#7C3AED]'
+        };
+      case 'Workshop':
+        return {
+          bg: 'bg-amber-50',
+          text: 'text-[#D97706]',
+          border: 'border-amber-200',
+          dot: 'bg-[#D97706]'
         };
       default:
         return {
