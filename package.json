@@ -1,19 +1,21 @@
 {
-  "name": "myntmore-sanyam-documentation",
+  "name": "myntmore-prompt-library",
   "version": "1.0.0",
-  "description": "Myntmore Technical Operations & Handover Web Portal",
+  "description": "Myntmore AI Prompt Library for Website, Dashboard, and Outreach Tool",
   "private": true,
   "homepage": "https://github.com/aitoolsteejay/sanyam-documentation",
   "scripts": {
     "start": "python3 portal/serve.py",
-    "build:data": "python3 portal/build_data.py"
+    "serve": "python3 portal/serve.py"
   },
   "keywords": [
     "myntmore",
-    "operations",
-    "handover",
-    "documentation",
-    "zoho-workdrive"
+    "prompt-library",
+    "ai-prompts",
+    "website",
+    "dashboard",
+    "outreach-tool",
+    "claude-code"
   ],
   "author": "Sanyam (Myntmore)",
   "license": "UNLICENSED"

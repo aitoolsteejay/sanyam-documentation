@@ -30,7 +30,7 @@ def run():
 
     url = f"http://localhost:{port}/index.html"
     print(f"==================================================")
-    print(f"  MYNTMORE Operations & Handover Web Portal")
+    print(f"  MYNTMORE AI Prompt Library")
     print(f"  Running locally at: {url}")
     print(f"  Open this in your browser: {url}")
     print(f"  Press Ctrl+C to stop the server")

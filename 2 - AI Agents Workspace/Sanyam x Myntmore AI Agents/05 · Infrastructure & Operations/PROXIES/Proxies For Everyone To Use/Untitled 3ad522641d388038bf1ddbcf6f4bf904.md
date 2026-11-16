@@ -1,3 +1,0 @@
-# Untitled
-
-FOR WHOM: Anagha

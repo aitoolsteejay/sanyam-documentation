@@ -1,8 +1,0 @@
-# gomyntmore.com
-
-DMARC: Yes
-Delinking : Yes
-New Landing page live: Yes
-SURBL form: No
-github repo: Yes
-vercel: Yes

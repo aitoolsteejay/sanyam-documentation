@@ -1,7 +1,0 @@
-# Untitled
-
-Amount/month: $2.25/Month
-FOR WHOM: Hozefa/Punam
-Provider: MarsProxies
-Renewal Date: 29th of the month
-Start Date: January 13, 2026
