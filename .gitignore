@@ -5,3 +5,4 @@ __pycache__/
 *.tmp
 .DS_Store
 .commit-msg.txt
+edits.json

@@ -265,6 +265,36 @@ h1.pt{font:600 32px/1.2 var(--serif);letter-spacing:-.01em;margin:0 0 10px}
 .stsec li small{color:var(--faint);font-size:12px;margin-left:auto;white-space:nowrap}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:13px;padding:8px 14px;border-radius:4px;z-index:90;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
+.edb{margin-left:4px;border:1px solid var(--rule2);border-radius:4px;padding:1px 10px;color:var(--ink2)!important;text-decoration:none!important;font-size:12.5px;background:#fff}
+.edb:hover{border-color:var(--link);color:var(--link)!important}
+.edited{color:#6b5300}
+.editor .pt{margin-bottom:6px}
+.ed-sub{font-size:13px;color:var(--mute);margin:0 0 18px}
+.ed-l{display:block;font-size:12px;color:var(--mute);margin:0 0 4px;text-transform:uppercase;letter-spacing:.04em}
+.ed-title{width:100%;font:600 22px var(--serif);border:1px solid var(--rule2);border-radius:4px;padding:6px 10px;margin:0 0 16px;color:var(--ink)}
+.ed-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 8px}
+.ed-bar button,.ed-foot button{border:1px solid var(--rule2);background:#fff;border-radius:4px;padding:5px 12px;font-size:13px;color:var(--ink2)}
+.ed-bar button.on{border-color:var(--ink);color:var(--ink);font-weight:600}
+.ed-bar input{border:1px solid var(--rule2);border-radius:4px;padding:5px 8px;font-size:13px;min-width:240px;flex:1;max-width:380px}
+.ed-bar .hint{font-size:12px;color:var(--faint);margin-left:auto}
+.ed-md{width:100%;min-height:62vh;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;border:1px solid var(--rule2);border-radius:4px;padding:12px 14px;color:var(--ink);resize:vertical;tab-size:2}
+.ed-md:focus,.ed-title:focus,.ed-grid textarea:focus,.ed-grid input:focus{outline:none;border-color:var(--link);box-shadow:0 0 0 1px var(--link)}
+.ed-prev{border:1px solid var(--rule);border-radius:4px;padding:6px 22px 16px;min-height:62vh}
+.ed-grid{overflow:auto;max-height:70vh;border:1px solid var(--rule);border-radius:4px}
+.ed-grid table{border-collapse:collapse;font-size:13px;min-width:100%}
+.ed-grid th,.ed-grid td{border-bottom:1px solid var(--rule);border-right:1px solid var(--rule);padding:0;vertical-align:top;min-width:150px}
+.ed-grid th{position:sticky;top:0;background:var(--soft);z-index:1}
+.ed-grid th input{width:100%;border:0;background:transparent;font:600 12.5px var(--sans);padding:7px 8px}
+.ed-grid textarea{display:block;width:100%;border:0;resize:vertical;font:13px/1.45 var(--sans);padding:6px 8px;min-height:32px;background:#fff}
+.ed-grid td.x,.ed-grid th.x{min-width:34px;width:34px;text-align:center}
+.ed-grid td.x button{border:0;background:none;color:var(--faint);font-size:16px;padding:6px}
+.ed-grid td.x button:hover{color:#a11}
+.ed-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule)}
+.ed-foot .save{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600;padding:7px 18px}
+.ed-foot .rv{margin-left:auto;color:#a11}
+.ed-foot input{border:1px solid var(--rule2);border-radius:4px;padding:6px 8px;font-size:13px;width:170px}
+.ed-warn{background:#fff6dc;border:1px solid #e8cf7a;border-radius:4px;padding:10px 14px;font-size:13.5px;margin:0 0 14px}
+.ed-warn button{margin-left:8px}
 
 @media (max-width:1150px){.toc{display:none}}
 @media (max-width:960px){
@@ -335,11 +365,11 @@ function safeGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function safeSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 
 /* ================= active / inactive ================= */
-let OFF=new Set(), SAVE_MODE='local', HIDE=safeGet('kb-hide')==='1';
+let OFF=new Set(), SAVED=new Set(), SAVE_MODE='local', HIDE=safeGet('kb-hide')==='1';
 async function loadStatus(){
   try{const r=await fetch('api/status',{cache:'no-store'});if(r.ok&&/json/.test(r.headers.get('content-type')||'')){const j=await r.json();
     if(j.writable===false){const l=safeGet('kb-off');OFF=new Set((l?JSON.parse(l):(j.inactive||[])).filter(id=>N[id]));return;}
-    OFF=new Set((j.inactive||[]).filter(id=>N[id]));SAVE_MODE='server';return;}}catch(e){}
+    OFF=new Set((j.inactive||[]).filter(id=>N[id]));SAVED=new Set(OFF);SAVE_MODE='server';if(j.editKey)EDIT_KEY_REQ=true;return;}}catch(e){}
   try{OFF=new Set(JSON.parse(safeGet('kb-off')||'[]').filter(id=>N[id]));}catch(e){}
 }
 let saveT;
@@ -347,8 +377,17 @@ function saveStatus(){
   safeSet('kb-off',JSON.stringify([...OFF]));
   if(SAVE_MODE!=='server'){toast('Saved in this browser');return;}
   clearTimeout(saveT);
-  saveT=setTimeout(()=>fetch('api/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({inactive:[...OFF]})})
-    .then(r=>{if(!r.ok)throw new Error();toast('Saved');}).catch(()=>toast('Could not save for everyone. Kept in this browser.')),200);
+  saveT=setTimeout(()=>{
+    const off=[...OFF].filter(i=>!SAVED.has(i)), on=[...SAVED].filter(i=>!OFF.has(i)), snap=new Set(OFF);
+    if(!off.length&&!on.length) return;
+    apiPost('api/status',{off,on}).then(r=>{if(!r.ok)throw new Error();SAVED=snap;toast('Saved for everyone');}).catch(()=>toast('Could not save for everyone. Kept in this browser.'));
+  },250);
+}
+let EDIT_KEY_REQ=false;
+function apiPost(url,body,retry){
+  const k=safeGet('kb-key');
+  return fetch(url,{method:'POST',headers:Object.assign({'Content-Type':'application/json'},k?{'x-edit-key':k}:{}),body:JSON.stringify(body)})
+    .then(r=>{if(r.status===401&&!retry){const v=prompt('Enter the wiki edit key (asked once per browser)');if(v){safeSet('kb-key',v.trim());return apiPost(url,body,true);}}return r;});
 }
 let toastT;
 function toast(m){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t);}t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1600);}
@@ -371,7 +410,8 @@ function fillBanners(){$$('[data-stb]').forEach(b=>{const id=b.dataset.stb,o=off
 document.addEventListener('change',e=>{const i=e.target.closest&&e.target.closest('[data-st]');if(i)setActive([i.dataset.st],i.checked);});
 /* ================= search index ================= */
 const DOCS=[];
-(function build(){
+function buildDocs(){
+  DOCS.length=0; VOCAB=null;
   for(const id in N){
     if(id===ROOT) continue;
     const n=N[id];
@@ -399,7 +439,7 @@ const DOCS=[];
     }
   }
   function mk(type,id,t,parts,ctx){return {type,id,t,tl:t.toLowerCase(),parts,sec:secOf(ctx),all:parts.map(p=>p.hl+' '+p.tl).join(' '),ctx};}
-})();
+}
 
 let VOCAB=null;
 function vocab(){
@@ -606,6 +646,8 @@ function renderPage(id,params){
   if(pk.length) bits.push(`${DESC[id]} page${DESC[id]>1?'s':''} inside`);
   if(n.words>=40) bits.push(`${n.words.toLocaleString()} words`);
   if(n.red) bits.push(`<span class="hid">${n.red} sensitive value${n.red>1?'s':''} hidden</span>`);
+  if(META[id]) bits.push(`<span class="edited" title="Changed on the website; the Notion export has the original">Edited ${esc(fmtDate(META[id].at))}${META[id].by?' by '+esc(META[id].by):''}</span>`);
+  if(CAN_EDIT) bits.push(`<a class="edb" href="#/edit/${id}">Edit${n.kind==='db'?' table':''}</a>`);
   c.innerHTML=crumbs(id)+`<h1 class="pt">${esc(SECNO[id]?SECNO[id]+' · '+short(n.title):n.title)}</h1><div class="meta">${sw(id,true)}${bits.map(b=>`<span>${b}</span>`).join('')}<span class="find"><input placeholder="Find in this page" value="${esc(n.kind==='db'?'':q)}" aria-label="Find in this page"><span class="fc"></span><button data-f="-1" aria-label="Previous match">↑</button><button data-f="1" aria-label="Next match">↓</button></span></div><div class="stb" data-stb="${id}" hidden></div>`;
   if(SECNO[id]&&n.desc) c.insertAdjacentHTML('beforeend',`<p style="font-size:16px;color:var(--ink2);margin:-6px 0 20px">${esc(n.desc)}</p>`);
   if(n.props&&n.props.length) c.insertAdjacentHTML('beforeend',`<table class="props">${n.props.map(([k,v])=>`<tr><th>${esc(k)}</th><td>${cell(v)||'<span class="empty">–</span>'}</td></tr>`).join('')}</table>`);
@@ -753,8 +795,123 @@ function renderTables(){
   <table class="plain"><thead><tr><th>Status</th><th>Table</th><th>Section</th><th>Rows</th><th>Columns</th></tr></thead><tbody>${ids.map(id=>{const n=N[id],s=secOf(id);return `<tr><td style="width:120px">${sw(id,true)}</td><td><a href="#/p/${id}" data-act="${id}" class="${actCls(id).trim()}">${esc(n.title)}</a></td><td>${s?esc(secLabel(s)):''}</td><td>${(n.rows||[]).length}</td><td style="color:var(--mute);font-size:13px">${esc((n.cols||[]).join(', '))}</td></tr>`;}).join('')}</tbody></table></div>`;
 }
 
+
+/* ================= editing (saved to Supabase through api/content) ================= */
+let CAN_EDIT=false, DIRTY=false, SKIP_ROUTE=false;
+const META={}, ORIG={};
+const fmtDate=t=>{try{return new Date(t).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}catch(e){return ''}};
+function mdDesc(md){for(const l of String(md||'').split('\n')){const t=plain(l);if(t&&!/^#/.test(l.trim())&&t.length>20)return t.length>160?t.slice(0,157)+'…':t;}return '';}
+function applyEdit(id,p){
+  const n=N[id]; if(!n) return;
+  if(!ORIG[id]) ORIG[id]={title:n.title,md:n.md,cols:n.cols,rows:n.rows,rowIds:n.rowIds,words:n.words,desc:n.desc};
+  const o=ORIG[id];
+  n.title=p.title||o.title;
+  n.md=p.md!=null?p.md:o.md;
+  if(n.kind==='db'){n.cols=p.cols||o.cols;n.rows=p.rows||o.rows;n.rowIds=p.row_ids||(p.rows?(p.rows.map(()=>null)):o.rowIds);n.desc=`Table · ${n.rows.length} rows · ${n.cols.length} columns`;}
+  else if(p.md!=null){n.words=plain(n.md).split(' ').filter(Boolean).length;n.desc=mdDesc(n.md)||o.desc;}
+  META[id]={at:p.updated_at,by:p.updated_by};
+}
+function unapply(id){const o=ORIG[id];if(!o)return;Object.assign(N[id],{title:o.title,md:o.md,cols:o.cols,rows:o.rows,rowIds:o.rowIds,words:o.words,desc:o.desc});delete META[id];}
+async function loadContent(){
+  try{const r=await fetch('api/content',{cache:'no-store'});if(!r.ok||!/json/.test(r.headers.get('content-type')||''))return;
+    const j=await r.json();CAN_EDIT=!!j.writable;if(j.editKey)EDIT_KEY_REQ=true;
+    for(const id in (j.pages||{})) if(N[id]) applyEdit(id,j.pages[id]);}catch(e){}
+}
+function afterContentChange(){buildDocs();renderTree();}
+
+function renderEditor(id){
+  const n=N[id];
+  if(!n){view.innerHTML='<div class="content"><h1 class="pt">Page not found</h1></div>';return;}
+  if(!CAN_EDIT){view.innerHTML=`<div class="content"><h1 class="pt">Editing is not available</h1><p>Edits are saved to Supabase, which is not connected on this site yet. See DEPLOY.md.</p><p><a href="#/p/${id}">Back to the page</a></p></div>`;return;}
+  const isDb=n.kind==='db', o=ORIG[id]||n;
+  const c=document.createElement('div'); c.className='content wide editor';
+  c.innerHTML=crumbs(id)+`<h1 class="pt">Edit ${isDb?'table':'page'}</h1>
+    <p class="ed-sub">${META[id]?`Last edited ${esc(fmtDate(META[id].at))}${META[id].by?' by '+esc(META[id].by):''}. `:''}Changes are saved for everyone. Every version is kept in Supabase (wiki_history).</p>
+    <div class="ed-warn" hidden></div>
+    <label class="ed-l" for="edt">Title</label><input class="ed-title" id="edt" value="${esc(n.title)}">
+    <div class="ed-body"></div>
+    <div class="ed-foot"><button class="save">Save</button><a href="#/p/${id}">Cancel</a><input class="who" placeholder="Your name (optional)" value="${esc(safeGet('kb-name')||'')}" aria-label="Your name">
+      ${META[id]?'<button class="rv">Undo all website edits</button>':''}</div>`;
+  const body=$('.ed-body',c), warn=$('.ed-warn',c);
+  let getData;
+  if(!isDb){
+    body.innerHTML=`<div class="ed-bar"><button data-m="w" class="on">Write</button><button data-m="p">Preview</button>
+      <input list="edpages" placeholder="Link to a page: type a title, press Enter" aria-label="Link to a page"><datalist id="edpages"></datalist>
+      <span class="hint">Markdown · ⌘S to save</span></div><textarea class="ed-md" spellcheck="true"></textarea><div class="ed-prev md" hidden></div>`;
+    const ta=$('.ed-md',body), pv=$('.ed-prev',body);
+    ta.value=n.md||'';
+    $$('.ed-bar [data-m]',body).forEach(b=>b.onclick=()=>{
+      $$('.ed-bar [data-m]',body).forEach(x=>x.classList.toggle('on',x===b));
+      const p=b.dataset.m==='p'; ta.hidden=p; pv.hidden=!p;
+      if(p){pv.innerHTML='';const m=renderMd(ta.value);$$('.db-embed',m).forEach(d=>{if(N[d.dataset.db])d.replaceWith(dbTable(d.dataset.db,true,''));});pv.appendChild(m);}
+    });
+    const li=$('.ed-bar input',body), dl=$('#edpages',body), opts={};
+    li.onfocus=()=>{if(dl.childElementCount)return;const h=[];for(const k in N){if(k===ROOT||N[k].isRow)continue;const v=`${title(k)} · ${k.slice(0,5)}`;opts[v]=k;h.push(`<option value="${esc(v)}">`);}dl.innerHTML=h.join('');};
+    li.onkeydown=e=>{if(e.key!=='Enter')return;e.preventDefault();const k=opts[li.value];if(!k){toast('Pick a page from the list');return;}
+      const ins=`[${title(k)}](#/p/${k})`, a=ta.selectionStart, b=ta.selectionEnd;ta.setRangeText(ins,a,b,'end');li.value='';ta.focus();DIRTY=true;};
+    getData=()=>({md:ta.value});
+  } else {
+    let cols=[...(n.cols||[])], rows=(n.rows||[]).map(r=>[...r]), rids=[...(n.rowIds||rows.map(()=>null))];
+    const draw=()=>{
+      body.innerHTML=`<div class="ed-bar"><button class="ar">+ Add row</button><button class="ac">+ Add column</button><span class="hint">${rows.length} rows · cells take Markdown · ⌘S to save</span></div>
+        <div class="ed-grid"><table><thead><tr>${cols.map((h,i)=>`<th><input data-h="${i}" value="${esc(h)}" aria-label="Column name"></th>`).join('')}<th class="x"></th></tr></thead>
+        <tbody>${rows.map((r,ri)=>`<tr>${cols.map((_,ci)=>`<td><textarea rows="1" data-r="${ri}" data-c="${ci}">${esc(r[ci]||'')}</textarea></td>`).join('')}<td class="x"><button data-del="${ri}" title="Delete row" aria-label="Delete row">×</button></td></tr>`).join('')}</tbody></table></div>`;
+      $('.ar',body).onclick=()=>{rows.push(cols.map(()=>''));rids.push(null);DIRTY=true;draw();const t=$$('.ed-grid tbody tr',body).pop();t&&t.scrollIntoView({block:'center'});t&&$('textarea',t).focus();};
+      $('.ac',body).onclick=()=>{const nm=prompt('New column name');if(!nm)return;cols.push(nm.trim());rows.forEach(r=>r.push(''));DIRTY=true;draw();};
+    };
+    body.oninput=e=>{const t=e.target;DIRTY=true;if(t.dataset.h!=null)cols[+t.dataset.h]=t.value;else if(t.dataset.r!=null)rows[+t.dataset.r][+t.dataset.c]=t.value;};
+    body.addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(!b)return;const i=+b.dataset.del;
+      if(!confirm(`Delete row "${(rows[i][0]||'Untitled').slice(0,60)}"?`))return;rows.splice(i,1);rids.splice(i,1);DIRTY=true;draw();});
+    draw();
+    getData=()=>({cols,rows:rows.map(r=>cols.map((_,i)=>String(r[i]??''))),row_ids:rids});
+  }
+  c.addEventListener('input',()=>{DIRTY=true;});
+  async function save(force){
+    const d=getData(), t=$('#edt',c).value.trim()||o.title, who=$('.who',c).value.trim();
+    safeSet('kb-name',who);
+    const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+    const payload={id,by:who||null,since:force||(META[id]&&META[id].at)||null,title:t!==o.title?t:null};
+    if(isDb){const changed=!same(d.cols,o.cols)||!same(d.rows,o.rows);payload.cols=changed?d.cols:null;payload.rows=changed?d.rows:null;payload.row_ids=changed?d.row_ids:null;}
+    else payload.md=d.md!==(o.md||'')?d.md:null;
+    const nothing=payload.title==null&&payload.md==null&&payload.rows==null;
+    if(nothing&&!META[id]){DIRTY=false;location.hash='#/p/'+id;toast('No changes');return;}
+    const btn=$('.save',c);btn.disabled=true;btn.textContent='Saving…';
+    try{
+      const r=await apiPost('api/content',nothing?{id,revert:true,by:who||null}:payload);
+      const j=await r.json().catch(()=>({}));
+      if(r.status===409&&j.current){
+        warn.hidden=false;warn.innerHTML=`${esc(j.current.updated_by||'Someone')} saved this ${isDb?'table':'page'} on ${esc(fmtDate(j.current.updated_at))} while you were editing. <button class="ow">Save mine over theirs</button><button class="lt">Load theirs (drops my changes)</button>`;
+        $('.ow',warn).onclick=()=>save(j.current.updated_at);
+        $('.lt',warn).onclick=()=>{applyEdit(id,j.current);afterContentChange();DIRTY=false;renderEditor(id);};
+        return;
+      }
+      if(!r.ok) throw new Error(j.error||'Could not save');
+      if(j.page) applyEdit(id,j.page); else unapply(id);
+      afterContentChange();DIRTY=false;location.hash='#/p/'+id;toast('Saved for everyone');
+    }catch(e){toast(e.message||'Could not save');}
+    finally{btn.disabled=false;btn.textContent='Save';}
+  }
+  $('.save',c).onclick=()=>save();
+  const rv=$('.rv',c);
+  if(rv) rv.onclick=async()=>{
+    if(!confirm('Go back to the Notion version of this '+(isDb?'table':'page')+'? The edited version stays in the history table in Supabase.'))return;
+    const r=await apiPost('api/content',{id,revert:true,by:$('.who',c).value.trim()||null});
+    if(!r.ok){toast('Could not undo');return;}
+    unapply(id);afterContentChange();DIRTY=false;location.hash='#/p/'+id;toast('Back to the Notion version');
+  };
+  c.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='s'){e.preventDefault();save();}});
+  view.innerHTML='';view.appendChild(c);
+  DIRTY=false;
+  if(!isDb) $('.ed-md',c).focus();
+}
+window.addEventListener('beforeunload',e=>{if(DIRTY){e.preventDefault();e.returnValue='';}});
+
 /* ================= router ================= */
+let LAST_HASH=location.hash;
 function route(){
+  if(SKIP_ROUTE){SKIP_ROUTE=false;return;}
+  if(DIRTY&&location.hash!==LAST_HASH){if(!confirm('You have unsaved changes. Leave without saving?')){SKIP_ROUTE=true;location.hash=LAST_HASH;return;}DIRTY=false;}
+  LAST_HASH=location.hash;
   const raw=location.hash.replace(/^#/,'')||'/'; const [path,qs]=raw.split('?'); const params=new URLSearchParams(qs||'');
   document.body.classList.remove('nav'); drop.classList.remove('open');
   $$('.top nav a').forEach(a=>a.classList.remove('on'));
@@ -764,13 +921,14 @@ function route(){
   else if(path==='/tables'){cur=null;renderTables();$('[data-n=tables]').classList.add('on');mark(null);document.title='Tables — AI & Operations';}
   else if(path==='/status'){cur=null;renderStatus(params);$('[data-n=status]').classList.add('on');mark(null);document.title='Active / inactive — AI & Operations';}
   else if(path==='/search'){cur=null;renderSearch(params);mark(null);document.title=(params.get('q')||'Search')+' — search';}
+  else if((m=path.match(/^\/edit\/(\w+)/))){cur=m[1];expandTo(cur);renderEditor(cur);document.title='Edit: '+title(cur)+' — AI & Operations';}
   else if((m=path.match(/^\/p\/(\w+)/))){cur=m[1];expandTo(cur);keep=renderPage(cur,params);document.title=title(cur)+' — AI & Operations';}
   fillBanners();
   if(path!=='/search'&&document.activeElement!==qi) qi.value='';
   if(!keep) window.scrollTo(0,0);
 }
 window.addEventListener('hashchange',route);
-loadStatus().then(()=>{renderTree();route();});
+Promise.all([loadStatus(),loadContent()]).then(()=>{buildDocs();renderTree();route();});
 })();
 </script>
 </body>

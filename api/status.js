@@ -1,74 +1,59 @@
-// Active / inactive switches for the wiki, stored in Redis (Upstash) on Vercel.
-// Connect a Redis store from the Vercel Marketplace (Upstash for Redis); it adds
-// KV_REST_API_URL and KV_REST_API_TOKEN automatically. Without a store the
-// site still works: switches are read from status.json and saved per browser.
+// Active / inactive switches, stored in Supabase (table wiki_inactive).
+// GET  → { inactive: [ids], writable, editKey }
+// POST { off: [ids], on: [ids] } → marks ids inactive / active again.
+// Without Supabase configured the site still works: switches come from
+// status.json and are saved in each person's browser.
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-
-const KEY = 'ai-ops-wiki:status';
+import { ID_RE, supabase, editAllowed, editKeyRequired, json, readBody } from './_supabase.js';
 
 function seed() {
   try {
     const data = JSON.parse(readFileSync(join(process.cwd(), 'status.json'), 'utf8'));
-    if (Array.isArray(data.inactive)) return { inactive: data.inactive };
+    if (Array.isArray(data.inactive)) return data.inactive;
   } catch {}
-  return { inactive: [] };
+  return [];
 }
-
-function store() {
-  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-  return url && token ? { url, token } : null;
-}
-
-async function redis(s, command) {
-  const r = await fetch(s.url, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${s.token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(command),
-  });
-  if (!r.ok) throw new Error(`Redis responded ${r.status}`);
-  return (await r.json()).result;
-}
-
-const json = (obj, status = 200) =>
-  new Response(JSON.stringify(obj), {
-    status,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-  });
 
 export async function GET() {
-  const s = store();
-  if (!s) return json({ ...seed(), writable: false });
+  const db = supabase();
+  if (!db) return json({ inactive: seed(), writable: false });
   try {
-    const raw = await redis(s, ['GET', KEY]);
-    const data = raw ? JSON.parse(raw) : seed();
-    return json({ inactive: data.inactive || [], updated: data.updated, writable: true });
-  } catch {
-    return json({ ...seed(), writable: false });
+    const rows = await db('wiki_inactive?select=id');
+    return json({ inactive: rows.map((r) => r.id), writable: true, editKey: editKeyRequired() });
+  } catch (e) {
+    console.error(e);
+    return json({ inactive: seed(), writable: false, error: 'Supabase unavailable' });
   }
 }
 
 export async function POST(request) {
-  const s = store();
-  if (!s) return json({ error: 'No storage connected. Switches are saved in this browser only.' }, 503);
-  const text = await request.text();
-  if (text.length > 2_000_000) return json({ error: 'too large' }, 413);
-  let ids;
+  const db = supabase();
+  if (!db) return json({ error: 'Supabase is not connected. Switches are saved in this browser only.' }, 503);
+  if (!editAllowed(request)) return json({ error: 'Edit key required' }, 401);
+  let body;
   try {
-    ids = JSON.parse(text).inactive;
-  } catch {
-    return json({ error: 'bad request' }, 400);
+    body = await readBody(request, 2_000_000);
+  } catch (e) {
+    return json({ error: e.message }, e.status || 400);
   }
-  if (!Array.isArray(ids) || !ids.every((i) => typeof i === 'string' && /^[0-9a-f]{32}$/.test(i))) {
-    return json({ error: 'bad request' }, 400);
-  }
-  const out = { inactive: [...new Set(ids)].sort(), updated: new Date().toISOString() };
+  const ok = (a) => Array.isArray(a) && a.length <= 5000 && a.every((i) => typeof i === 'string' && ID_RE.test(i));
+  const off = body.off || [], on = body.on || [];
+  if (!ok(off) || !ok(on)) return json({ error: 'bad request' }, 400);
   try {
-    await redis(s, ['SET', KEY, JSON.stringify(out)]);
-  } catch {
+    if (off.length)
+      await db('wiki_inactive?on_conflict=id', {
+        method: 'POST',
+        body: [...new Set(off)].map((id) => ({ id })),
+        prefer: 'resolution=ignore-duplicates,return=minimal',
+      });
+    const ons = [...new Set(on)];
+    for (let i = 0; i < ons.length; i += 200)
+      await db(`wiki_inactive?id=in.(${ons.slice(i, i + 200).join(',')})`, { method: 'DELETE', prefer: 'return=minimal' });
+  } catch (e) {
+    console.error(e);
     return json({ error: 'Could not save' }, 502);
   }
-  return json({ ok: true, inactive: out.inactive.length });
+  return json({ ok: true });
 }

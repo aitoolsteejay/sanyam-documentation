@@ -7,3 +7,5 @@ README.md
 __pycache__/
 .DS_Store
 .env*
+supabase/
+edits.json
