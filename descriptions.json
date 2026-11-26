@@ -220,7 +220,7 @@
  "41c522641d3881c2ba46e37e4d3c8188": "Five SEO, AEO and GEO reporting and prioritisation prompts, plus the full weekly PDF report prompt",
  "41a522641d3881828d61eafbef7a8689": "Picks the right prompt collection for the work and explains which libraries suit a coding assistant or ChatGPT",
  "421522641d38813ea2e7f7bd3fb16fbf": "Master prompt for the weekly SEO report PDF, with run steps, connector needs and a Markdown run log",
- "41c522641d3881e3a10cdc5438ae1c72": "Technical reference for the Calendly and Zoho Bookings flows into CRM, with test and fix steps",
+ "41c522641d3881e3a10cdc5438ae1c72": "The nine booking flows (5 TJ on Calendly, 4 Enwil on Zoho Bookings) into CRM, with test and fix steps",
  "41c522641d3881a5b5a9c4e91015e8f6": "Rules for routing eight free-tool Zoho Forms into CRM Leads, with lead source and field mappings",
  "41c522641d3881079accee30797d9c29": "Template for recording webinar and event Zoho Flows that push attendees into CRM Leads",
  "41c522641d388176b98dc883f2b5d5a4": "Notes on the two live GPT bots, one auditing and reporting, one creating CRM records from Smartlead prospects",
