@@ -1,22 +1,8 @@
 {
-  "name": "myntmore-prompt-library",
+  "name": "ai-ops-wiki",
   "version": "1.0.0",
-  "description": "Myntmore AI Prompt Library for Website, Dashboard, and Outreach Tool",
   "private": true,
-  "homepage": "https://github.com/aitoolsteejay/sanyam-documentation",
-  "scripts": {
-    "start": "python3 portal/serve.py",
-    "serve": "python3 portal/serve.py"
-  },
-  "keywords": [
-    "myntmore",
-    "prompt-library",
-    "ai-prompts",
-    "website",
-    "dashboard",
-    "outreach-tool",
-    "claude-code"
-  ],
-  "author": "Sanyam (Myntmore)",
-  "license": "UNLICENSED"
+  "type": "module",
+  "description": "Myntmore AI & Operations wiki (static site + one Vercel function)",
+  "engines": { "node": ">=20" }
 }
