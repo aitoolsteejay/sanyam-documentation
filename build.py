@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Build the AI & Operations knowledge-base website from the Notion export.
 
-Run:  python3 build.py
+Run:  python3 build.py            show everything, including passwords and keys
+      python3 build.py --redact   hide passwords, API keys, tokens and proxy logins
 Reads the Notion export in the parent folder, writes data.js + assets/ next to
 this script. index.html is the static app shell and is not regenerated.
-Secrets (passwords, API keys, tokens, proxy credentials) are redacted.
 """
 import csv, hashlib, json, os, re, shutil, sys
 from urllib.parse import unquote
@@ -19,6 +19,7 @@ NOTION_URL_ID = re.compile(r'notion\.so/[^)\s]*?([0-9a-f]{32})')
 
 # ---------------------------------------------------------------- redaction
 MASK = '••••••'
+REDACT = '--redact' in sys.argv   # passwords/keys are shown unless built with --redact
 SECRET_KEY_RE = re.compile(r'(?i)(password|passwd|\bpwd\b|secret|token|api[ _-]?key|private key|access key)')
 TOKEN_PATTERNS = [
     re.compile(r'\bsk-(?:proj-|ant-[a-z0-9]+-)?[A-Za-z0-9_\-]{16,}'),
@@ -50,7 +51,7 @@ class Redactor:
         return text
 
     def text(self, t):
-        if not t:
+        if not t or not REDACT:
             return t
         for rx in TOKEN_PATTERNS:
             t = self._sub(rx, MASK, t)
@@ -63,7 +64,7 @@ class Redactor:
         return t
 
     def value(self, key, v):
-        if v and v.strip() and SECRET_KEY_RE.search(key or ''):
+        if REDACT and v and v.strip() and SECRET_KEY_RE.search(key or ''):
             self.count += 1
             return MASK
         return self.text(v)

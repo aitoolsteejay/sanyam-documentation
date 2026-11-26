@@ -6,7 +6,7 @@ Myntmore's internal AI & Operations knowledge base, built from the Notion export
 - Active / inactive switch on every section, page and table
 - Deploys to Vercel as a static site (see [DEPLOY.md](DEPLOY.md))
 
-Passwords, API keys and proxy logins from the export are replaced with `••••••` at build time.
+Passwords, API keys and proxy logins from the export are shown as-is. Build with `python3 build.py --redact` to hide them.
 
 ## Files
 

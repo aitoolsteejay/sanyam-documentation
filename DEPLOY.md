@@ -35,7 +35,7 @@ The first time the site loads, it starts from the switches in `status.json`. Aft
 ## Updating content later
 
 1. Drop a new Notion export into `Private & Shared 4/` (replacing the old `AI & Operations` folder and page).
-2. `python3 build.py` (rebuilds `data.js` and `assets/`, and hides secrets again).
+2. `python3 build.py` (rebuilds `data.js` and `assets/`; add `--redact` to hide passwords and keys).
 3. Commit and push to `main` (Vercel redeploys), or run `vercel --prod`.
 
 ## Running locally (no Vercel)
