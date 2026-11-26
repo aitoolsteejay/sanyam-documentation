@@ -311,6 +311,15 @@ for ln in root['md'].split('\n'):
 for sid, d in sec_desc.items():
     nodes[sid]['desc'] = d
 
+# hand-written one-line descriptions (descriptions.json: {id: text}); section
+# intros from the root page take precedence
+DESC_FILE = os.path.join(HERE, 'descriptions.json')
+if os.path.exists(DESC_FILE):
+    with open(DESC_FILE, encoding='utf-8') as f:
+        for nid, d in json.load(f).items():
+            if nid in nodes and nid not in sec_desc and d:
+                nodes[nid]['desc'] = d
+
 # ---------------------------------------------------------------- write
 KEEP = ['id', 'kind', 'title', 'parent', 'children', 'props', 'md', 'red', 'words', 'desc',
         'sec', 'cols', 'rows', 'rowIds', 'isRow']

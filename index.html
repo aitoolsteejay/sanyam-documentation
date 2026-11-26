@@ -807,8 +807,8 @@ function applyEdit(id,p){
   const o=ORIG[id];
   n.title=p.title||o.title;
   n.md=p.md!=null?p.md:o.md;
-  if(n.kind==='db'){n.cols=p.cols||o.cols;n.rows=p.rows||o.rows;n.rowIds=p.row_ids||(p.rows?(p.rows.map(()=>null)):o.rowIds);n.desc=`Table · ${n.rows.length} rows · ${n.cols.length} columns`;}
-  else if(p.md!=null){n.words=plain(n.md).split(' ').filter(Boolean).length;n.desc=mdDesc(n.md)||o.desc;}
+  if(n.kind==='db'){n.cols=p.cols||o.cols;n.rows=p.rows||o.rows;n.rowIds=p.row_ids||(p.rows?(p.rows.map(()=>null)):o.rowIds);n.desc=o.desc;}
+  else if(p.md!=null){n.words=plain(n.md).split(' ').filter(Boolean).length;n.desc=o.desc||mdDesc(n.md);}
   META[id]={at:p.updated_at,by:p.updated_by};
 }
 function unapply(id){const o=ORIG[id];if(!o)return;Object.assign(N[id],{title:o.title,md:o.md,cols:o.cols,rows:o.rows,rowIds:o.rowIds,words:o.words,desc:o.desc});delete META[id];}
